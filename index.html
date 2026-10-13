@@ -1,4 +1,16 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+
+<!doctype html><html><head>
+   <script>
+   window.GA_ID='G-1J7YKZQZ9E';
+   window.dataLayer=window.dataLayer||[];
+   function gtag(){dataLayer.push(arguments)}
+   if(window.GA_ID.indexOf('XXXX')<0){
+     var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+window.GA_ID;document.head.appendChild(s);
+     gtag('js',new Date());gtag('config',window.GA_ID);
+   }
+   function track(name,params){try{if(window.GA_ID.indexOf('XXXX')<0)gtag('event',name,params||{})}catch(e){}}
+   </script>
+   <meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Dhara Enterprise</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -933,4 +945,52 @@ window.addEventListener('resize',function(){if(window.innerWidth>820)set(false)}
 })();
 </script>
 
+<!-- ===== BLOCK 2: paste at the very bottom of index.html (after everything else) ===== -->
+<script>
+/* Dhara Enterprise event tracking. No personal data is sent: chat questions are counted by topic only. */
+(function(){
+  var topics=[['price_quote',/price|rate|cost|quot|rfq|discount|how much/],['urgent_delivery',/urgent|breakdown|emergency|same.?day|stoppage|downtime|deliver|dispatch|lead time/],['contact',/contact|phone|call|whatsapp|email|address|where|location|visit|office/],['brands',/skf|fag|schaeffler|nsk|ntn|timken|nachi|koyo|jtekt|zkl|urb|brand|genuine|original/],['pedestal_housing',/pedestal|pillow|plummer|flange|take.?up|housing|ucp|ucf|uct/],['linear_rail',/linear|rail|guide|bushing|cnc/],['needle_thrust_accessory',/needle|thrust|adapter|sleeve|lock ?nut|washer|cage/],['application_help',/gearbox|reducer|motor|fan|blower|pump|conveyor|idler|crane|hoist|tractor|wheel|hub/],['bearing_number',/\b[0-9]{4,5}\b/]];
+  function topic(q){q=String(q||'').toLowerCase();for(var i=0;i<topics.length;i++)if(topics[i][1].test(q))return topics[i][0];return 'other'}
+  function where(a){return a.closest('header,nav')?'header':a.closest('footer')?'footer':a.closest('#contact')?'contact':a.closest('#quote')?'quote_section':'page'}
+  document.addEventListener('click',function(e){
+    var t=e.target;if(!t.closest)return;
+    var a=t.closest('a'),b=t.closest('button');
+    if(a){
+      var h=a.getAttribute('href')||'';
+      if(h.indexOf('tel:')===0)track('phone_click',{where:where(a)});
+      else if(h.indexOf('wa.me')>-1||h.indexOf('whatsapp')>-1){
+        if(a.id==='wa'||h.indexOf('text=')>-1)track('generate_lead',{method:'whatsapp_quote'});
+        else track('whatsapp_click',{where:where(a)});
+      }
+      else if(h.indexOf('mailto:')===0)track('email_click');
+      else if(h.indexOf('google.com/maps')>-1)track('map_click');
+      else if(h==='#quote')track('quote_cta_click',{where:where(a)});
+      else if(h.charAt(0)==='#'&&h.length>1)track('section_nav',{section:h.slice(1)});
+    }
+    if(b){
+      var txt=(b.textContent||'').trim().toLowerCase();
+      if(b.id==='chat-open'||txt.indexOf('ask dhara')>-1)track('chat_open');
+      if(b.id==='copy'||txt==='copy message')track('quote_message_copied');
+    }
+    var row=t.closest('.cat .row');
+    if(row){var dt=row.querySelector('dt');track('product_interest',{item:dt?dt.textContent.trim():'unknown'})}
+  });
+  /* chat questions, by topic only */
+  var log=document.getElementById('log');
+  if(log&&window.MutationObserver){
+    new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){
+      if(n.className==='msg me')track('chat_message',{topic:topic(n.textContent)});
+    })})}).observe(log,{childList:true});
+  }
+  /* which sections people reach */
+  if('IntersectionObserver' in window){
+    var seen={};
+    var io=new IntersectionObserver(function(es){es.forEach(function(en){
+      if(en.isIntersecting&&!seen[en.target.id]){seen[en.target.id]=1;track('section_view',{section:en.target.id})}
+    })},{threshold:.35});
+    ['products','brands','industries','terms','quote','contact'].forEach(function(id){var el=document.getElementById(id);if(el)io.observe(el)});
+  }
+})();
+</script>
 </body></html>
+
